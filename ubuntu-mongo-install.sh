@@ -46,12 +46,16 @@ mkdir /mongodb/data
 
 sed -i 's/dbpath=\/var\/lib\/mongodb/dbpath=\/mongodb\/data/' /etc/mongod.conf
 sed -i 's/bind_ip/#bind_ip/' /etc/mongod.conf
-sed -i 's/#auth = true/auth = true/' /etc/mongod.conf
 
 sudo chown mongodb -R /mongodb
 sudo chown mongodb -R /mongodb/data
 
 sudo service mongod restart
 
+sleep 2s
 mongo admin --eval 'db.createUser({user:"mongoadmin",pwd:"mongopassword",roles:[{role:"userAdminAnyDatabase", db: "admin"}]})'
+
+sed -i 's/#auth = true/auth = true/' /etc/mongod.conf
+
+sudo service mongod restart
 
