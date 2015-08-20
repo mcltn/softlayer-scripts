@@ -52,3 +52,6 @@ sudo chown mongodb -R /mongodb
 sudo chown mongodb -R /mongodb/data
 
 sudo service mongod restart
+
+mongo admin --eval 'db.createUser({user:"mongoadmin",pwd:"mongopassword",roles:[{role:"userAdminAnyDatabase", db: "admin"}]})'
+
