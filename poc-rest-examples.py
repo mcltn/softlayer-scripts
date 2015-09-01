@@ -50,6 +50,17 @@ def getAccountSSHKey():
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
 
 
+def addSSHKeys(label, key):
+	url = baseURL + '/SoftLayer_Account/SshKeys'
+	data = {"parameters": [ {"key": key, "label": label} ]}
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	if (r.status_code == 200):
+		return True
+	else:
+		return False
+
+
 def getEventLog():
 	url = baseURL + '/SoftLayer_Event_Log/getAllObjects?resultLimit=0,10'
 	#url += '&objectFilter={"objectId":{"operation":277800}}'
@@ -101,12 +112,24 @@ def getHubNetworkStorage():
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
 
 
-def getActivePackages():
-	url = baseURL + '/SoftLayer_Account/getActivePackages'
-	print url
+def getDataCenters():
+	url = baseURL + '/SoftLayer_Location/Datacenters'
 	r = requests.get(url, auth=(username, apiKey))
-	result = r.json()
-	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+	if (r.status_code == 200):
+		return r.json()
+	else:
+		return []
+
+
+def getOSes():
+	url = baseURL + '/SoftLayer_Software_Description/AllObjects'
+	r = requests.get(url, auth=(username, apiKey))
+	oses = []
+	for os in r.json():
+		if os['virtualizationPlatform'] == 0 and os['operatingSystem'] == 1:
+			oses.append(os)
+			#print os['referenceCode']
+	return oses
 
 
 def getProductPackageItemPrices():
@@ -116,7 +139,24 @@ def getProductPackageItemPrices():
 	result = r.json()
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
 
-	
+
+def getProductPackageItems(packageId, mask='N'):
+	url = baseURL + '/SoftLayer_Product_Package/' + str(packageId) + '/getItems'
+
+	if mask == 'Y':
+		url = url + "?objectMask='mask[capacity,description,units,prices[id],categories[name]]'"
+
+	r = requests.get(url, auth=(username, apiKey))
+	print '*************'
+	print r.status_code
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	print '*************'
+	if (r.status_code == 200):
+		return r.json()
+	else:
+		return None
+
+
 def getPrivateImages():
 	url = baseURL + '/SoftLayer_Account/getBlockDeviceTemplateGroups'
 	r = requests.get(url, auth=(username, apiKey))
@@ -151,12 +191,102 @@ def getServer(serverId):
 	else:
 		return None
 
+# Needs validation
 def updateServer(serverId, server):
 	url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId)
 	headers = {'Accept':'application/json','Content-Type':'application/json'}
 	r = requests.put(url, data=simplejson.dumps(server), headers=headers, auth=(username, apiKey))
 	result = r.json()
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+
+
+def createServer(hostname, domain, startCpus, maxMemory, useLocalDisk, usePrivateNetworkOnly, useHourlyBilling, datacenter, operatingSystemReferenceCode, sshKeys, privateVlan, imageId):
+	url = baseURL + '/SoftLayer_Virtual_Guest'
+	data = {"parameters": [ {"hostname": hostname, "domain": domain, "startCpus": startCpus, "maxMemory": maxMemory, "localDiskFlag": useLocalDisk, "privateNetworkOnlyFlag": usePrivateNetworkOnly, "hourlyBillingFlag": useHourlyBilling, "datacenter":{"name":datacenter}} ]}
+
+	if len(sshKeys) > 0:
+		keys = []
+		for key in sshKeys:
+			keys.append({"id": key})
+		data['parameters'][0]['sshKeys'] = keys
+
+	if privateVlan is not None:
+		vlan = {"networkVlan":{"id": privateVlan}}
+		data['parameters'][0]['primaryBackendNetworkComponent'] = vlan
+
+	if operatingSystemReferenceCode != "":
+		data['parameters'][0]['blockDevices'] = [{"device":0, "diskImage": {"capacity":100}}]
+		data['parameters'][0]['operatingSystemReferenceCode'] = operatingSystemReferenceCode
+
+	if imageId != "" and operatingSystemReferenceCode == "":
+		data['parameters'][0]['blockDeviceTemplateGroup'] = {"globalIdentifier": imageId}
+
+	data['parameters'][0]['networkComponents'] = [{"maxSpeed":1000}]
+
+	print simplejson.dumps(data, sort_keys=True, indent=4 * ' ')
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	#print r.status_code
+	#print r.json()
+	#print '\n\n'
+	if (r.status_code == 201):
+		return r.json()
+	else:
+		print r.status_code
+		print r.text
+		return None
+
+
+def deleteServer(serverId):
+	url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId)
+	r = requests.delete(url, auth=(username, apiKey))
+	if (r.status_code == 200):
+		return True
+	else:
+		return False
+
+
+
+def getActivePackages():
+	url = baseURL + '/SoftLayer_Account/getActivePackages'
+	print url
+	r = requests.get(url, auth=(username, apiKey))
+	result = r.json()
+	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+
+
+def getProductPackageCategories(packageId):
+	url = baseURL + '/SoftLayer_Product_Package/' + str(packageId) + '/getCategories'
+	r = requests.get(url, auth=(username, apiKey))
+	print '*************'
+	print r.status_code
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	print '*************'
+	if (r.status_code == 200):
+		return r.json()
+	else:
+		return None
+
+
+def placeProductOrder(locationId, priceId):
+	url = baseURL + '/SoftLayer_Product_Order/placeOrder'
+
+	data = {"parameters":[{"complexType":"SoftLayer_Container_Product_Order","location":locationId,"packageId":0,"prices":[{"id": priceId}]}]}
+
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	print '*************'
+	print r.status_code
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	print '*************'
+	print '\n\n'
+	if (r.status_code == 201):
+		return r.json()
+	else:
+		print r.status_code
+		print r.text
+		return None
+
 
 
 #############################################################################
