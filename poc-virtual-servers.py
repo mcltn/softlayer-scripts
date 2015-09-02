@@ -14,7 +14,7 @@ parser.add_argument("--action", default="CREATE", choices=['LIST','CREATE','CAPT
 
 parser.add_argument("--serverId", type=int)
 
-parser.add_argument("--serverCount", default=1)
+parser.add_argument("--serverCount", type=int, default=1)
 parser.add_argument("--uniqueId", default="")
 parser.add_argument("--tag", default="poc-swat")
 
@@ -176,8 +176,7 @@ def orderServer(counter):
 
 
 def provisionServers():
-	if (args.verbose):
-		print 'Begin: ' + time.strftime('%Y-%m-%d %I:%M:%S %Z')
+	print 'Begin: ' + time.strftime('%Y-%m-%d %I:%M:%S %Z')
 	
 	completed = False
 	totalServers = args.serverCount
@@ -232,8 +231,8 @@ def provisionServers():
 					exit == True
 
 
+	print 'Completed: ' + time.strftime('%Y-%m-%d %I:%M:%S %Z')
 	if (args.waitForCompletion and args.verbose):
-		print 'Completed: ' + time.strftime('%Y-%m-%d %I:%M:%S %Z')
 		print simplejson.dumps(results, sort_keys=True, indent=4 * ' ')
 
 	if(args.waitForCompletion and args.reportFileName != ''):
