@@ -189,7 +189,7 @@ def provisionServers():
 
 	tag = args.tag
 	if ',' in tag:
-		tag = tag.split(',')[1]
+		tag = tag.split(',')[0]
 
 	while completed == False:
 
@@ -209,6 +209,7 @@ def provisionServers():
 				print '.'
 			time.sleep(1)
 
+			#print 'Tag: ' + tag
 			instances = getInstances(tag)
 
 			for instance in instances:
