@@ -10,13 +10,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--username", default="")
 parser.add_argument("--apiKey", default="")
 
-parser.add_argument("--action", default="CREATE", choices=['LIST','CREATE','CAPTURE','CANCEL'])
+parser.add_argument("--action", default="CREATE", choices=['LIST','LIST_IMAGES', 'CREATE','CAPTURE','CANCEL'])
 
 parser.add_argument("--serverId", type=int)
 
 parser.add_argument("--serverCount", type=int, default=1)
 parser.add_argument("--uniqueId", default="")
 parser.add_argument("--tag", default="poc-swat")
+parser.add_argument("--startIncrement", type=int, default=1) # Used to add servers to host-domain combo
 
 parser.add_argument("--hostname", default="poc")
 parser.add_argument("--domain", default="poc.softlayer.com")
@@ -182,6 +183,14 @@ def provisionServers():
 	totalServers = args.serverCount
 	counter = 1
 
+	if (args.startIncrement > 1):
+		counter = args.startIncrement
+		totalServers = totalServers + (counter-1)
+
+	tag = args.tag
+	if ',' in tag:
+		tag = tag.split(',')[1]
+
 	while completed == False:
 
 		if (counter <= totalServers):
@@ -200,11 +209,11 @@ def provisionServers():
 				print '.'
 			time.sleep(1)
 
-			instances = getInstances(args.tag)
+			instances = getInstances(tag)
 
 			for instance in instances:
 				instanceId = instance['id']
-				if results[instanceId]['provisionState'] == 'BUILDING':
+				if instanceId in results and results[instanceId]['provisionState'] == 'BUILDING':
 					if 'activeTransaction' in instance.keys():
 						activeTransaction = instance['activeTransaction']['transactionStatus']['name']
 						if not any(ss.get('name', None) == activeTransaction for ss in results[instanceId]['status']):
@@ -264,10 +273,13 @@ else:
 
 	if (args.action == 'LIST'):
 		print 'Listing servers...'
-		#listImages(args.tag)
+		getInstances(args.tag)
 	elif (args.action == 'CREATE'):
 		print 'Creating servers...'
 		provisionServers()
+	elif (args.action == 'LIST_IMAGES'):
+		print 'Listing servers...'
+		listImages()
 	elif (args.action == 'CAPTURE'):
 		print 'Capturing server...'
 		#captureImage()
