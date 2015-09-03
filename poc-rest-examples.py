@@ -158,10 +158,10 @@ def getProductPackageItems(packageId, mask='N'):
 
 
 def getPrivateImages():
-	url = baseURL + '/SoftLayer_Account/getBlockDeviceTemplateGroups'
+	url = baseURL + '/SoftLayer_Account/getBlockDeviceTemplateGroups?objectMask=mask[datacenter]'
 	r = requests.get(url, auth=(username, apiKey))
 	result = r.json()
-	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+	return result
 
 
 def createImageTemplate(serverId):
@@ -179,6 +179,21 @@ def createImageTemplate(serverId):
 	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
 	result = r.json()
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+
+
+def getImageLocations(imageId):
+	url = baseURL + '/SoftLayer_Virtual_Guest_Block_Device_Template_Group/' + str(imageId) + '/getStorageLocations'
+	r = requests.get(url, auth=(username, apiKey))
+	return r.json()
+
+
+def copyImageToLocation(imageId, datacenterId):
+	url = baseURL + '/SoftLayer_Virtual_Guest_Block_Device_Template_Group/' + str(imageId) + '/setAvailableLocations'
+	data = {'parameters':[[{'id':datacenterId}]]}
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	print r.status_code
+	print r.json()
 
 
 def getServer(serverId):
@@ -302,11 +317,24 @@ def placeProductOrder(locationId, priceId):
 #getHubNetworkStorage()
 #getActivePackages()
 #getProductPackageItemPrices()
-#getPrivateImages()
 #createImageTemplate(11495057)
 
-server = getServer(11581401)
-server['notes'] = 'Testing notes'
-updateServer(server['id'],server)
+#server = getServer(11581401)
+#server['notes'] = 'Testing notes'
+#updateServer(server['id'],server)
+
+#dcs = getDataCenters()
+#print simplejson.dumps(dcs, sort_keys=True, indent=4 * ' ')
+
+#imgs = getPrivateImages()
+#print simplejson.dumps(imgs, sort_keys=True, indent=4 * ' ')
+
+#locs = getImageLocations(498987)
+#print simplejson.dumps(locs, sort_keys=True, indent=4 * ' ')
+
+#copyImageToLocation(498987, 37473) #wdc01
+#copyImageToLocation(498987, 449612) #syd01
+
+copyImageToLocation(642995, 168642) #sjc01
 
 
