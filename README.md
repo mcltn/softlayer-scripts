@@ -15,9 +15,9 @@
 
 > To see available parameters
 > poc-vertual-servers.py --help
-'''
+```
 python poc-virtual-servers.py --action CREATE --serverCount 2 --uniqueId aa --tag aa-mcltn --hostname mcltn --domain colton.cc --datacenter dal09 --hourly --cpus 1 --memory 1024 --localDisk --localDisk1Size 25 --localDisk2Size 200 --osCode UBUNTU_LATEST --privateVlan 12345 --nicSpeed 1000 --sshKey 175267 --postInstallUrl https://dal05.objectstorage.service.networklayer.com/v1/AUTH_xyz/container/script.sh --verbose --waitForCompletion
-'''
+```
 
 
 ## ubuntu-mongo-install.sh
