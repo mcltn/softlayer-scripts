@@ -333,8 +333,8 @@ def placeProductOrder(locationId, priceId):
 #print simplejson.dumps(locs, sort_keys=True, indent=4 * ' ')
 
 #copyImageToLocation(498987, 37473) #wdc01
-#copyImageToLocation(498987, 449612) #syd01
+copyImageToLocation(498987, 449612) #syd01
 
-copyImageToLocation(642995, 168642) #sjc01
+#copyImageToLocation(642995, 168642) #sjc01
 
 
