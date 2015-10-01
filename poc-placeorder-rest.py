@@ -13,7 +13,7 @@ disk_name = '100 GB (LOCAL)'
 os_name = 'Windows Server 2012 Standard Edition (64 bit)'
 bandwidth_name = '0 GB Bandwidth'
 nic_name = '1 Gbps Private Network Uplink'
-
+virusscan_name = 'McAfee VirusScan Enterprise'
 
 
 # Get Active Package For Cloud
@@ -105,6 +105,11 @@ for config in configs:
 
 							#NIC
 							elif item_price['item']['description'] == nic_name :
+								data['parameters'][0]['prices'].append({'id':item_price['id']})
+								complete_categories.append(config['itemCategory']['name'])
+
+							#Virus Scan							
+							elif item_price['item']['description'] == virusscan_name :
 								data['parameters'][0]['prices'].append({'id':item_price['id']})
 								complete_categories.append(config['itemCategory']['name'])
 						
