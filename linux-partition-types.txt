@@ -1,0 +1,1120 @@
+[
+    {
+        "data": [
+            {
+                "id": 2054,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            },
+            {
+                "id": 2052,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            },
+            {
+                "id": 2050,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            }
+        ],
+        "description": "Linux Basic",
+        "id": 1,
+        "partitionTemplatePartition": [
+            {
+                "id": 2050,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            },
+            {
+                "id": 2052,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            },
+            {
+                "id": 2054,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 1
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2060,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            },
+            {
+                "id": 2058,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            },
+            {
+                "id": 2056,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            }
+        ],
+        "description": "Linux Large Swap",
+        "id": 2,
+        "partitionTemplatePartition": [
+            {
+                "id": 2056,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            },
+            {
+                "id": 2058,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            },
+            {
+                "id": 2060,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 2
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2068,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2064,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2062,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2066,
+                "isGrow": false,
+                "partitionName": "/swap1",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            }
+        ],
+        "description": "Linux Multiple Swap",
+        "id": 3,
+        "partitionTemplatePartition": [
+            {
+                "id": 2062,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2066,
+                "isGrow": false,
+                "partitionName": "/swap1",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2064,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            },
+            {
+                "id": 2068,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 3
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2074,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "10",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2072,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2070,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2076,
+                "isGrow": true,
+                "partitionName": "/disk0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            }
+        ],
+        "description": "Linux Extra Partition",
+        "id": 4,
+        "partitionTemplatePartition": [
+            {
+                "id": 2070,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2072,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2074,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "10",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            },
+            {
+                "id": 2076,
+                "isGrow": true,
+                "partitionName": "/disk0",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 4
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2136,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "10",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2134,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2132,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2138,
+                "isGrow": true,
+                "partitionName": "/var",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            }
+        ],
+        "description": "Linux Plesk",
+        "id": 5,
+        "partitionTemplatePartition": [
+            {
+                "id": 2132,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2134,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2136,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "10",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            },
+            {
+                "id": 2138,
+                "isGrow": true,
+                "partitionName": "/var",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 5
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2580,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "40",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2578,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2574,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2576,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2582,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "16",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2586,
+                "isGrow": true,
+                "partitionName": "/home",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2584,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "16",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            }
+        ],
+        "description": "cPanel",
+        "id": 6,
+        "partitionTemplatePartition": [
+            {
+                "id": 2574,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2576,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2578,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2582,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "16",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2584,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "16",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2580,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "40",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            },
+            {
+                "id": 2586,
+                "isGrow": true,
+                "partitionName": "/home",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 6
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 90,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 89,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 88,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 93,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 94,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "20",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 95,
+                "isGrow": true,
+                "partitionName": "/hsphere",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 92,
+                "isGrow": false,
+                "partitionName": "/backup2",
+                "partitionSize": "80",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 91,
+                "isGrow": false,
+                "partitionName": "/backup1",
+                "partitionSize": "80",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            }
+        ],
+        "description": "H-Sphere",
+        "id": 7,
+        "partitionTemplatePartition": [
+            {
+                "id": 88,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 89,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 93,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 90,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 94,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "20",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 91,
+                "isGrow": false,
+                "partitionName": "/backup1",
+                "partitionSize": "80",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 92,
+                "isGrow": false,
+                "partitionName": "/backup2",
+                "partitionSize": "80",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            },
+            {
+                "id": 95,
+                "isGrow": true,
+                "partitionName": "/hsphere",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 7
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 98,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "15",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 97,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 96,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 100,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "15",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 101,
+                "isGrow": false,
+                "partitionName": "/home",
+                "partitionSize": "50",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 99,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            }
+        ],
+        "description": "Unpartitioned",
+        "id": 8,
+        "partitionTemplatePartition": [
+            {
+                "id": 96,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 97,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 98,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "15",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 100,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "15",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 99,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            },
+            {
+                "id": 101,
+                "isGrow": false,
+                "partitionName": "/home",
+                "partitionSize": "50",
+                "partitionTemplate": null,
+                "partitionTemplateId": 8
+            }
+        ],
+        "templateType": "SYSTEM"
+    },
+    {
+        "data": [
+            {
+                "id": 2122,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2124,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2118,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2120,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2128,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2130,
+                "isGrow": true,
+                "partitionName": "/home",
+                "partitionSize": "191.8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2126,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            }
+        ],
+        "description": "cPanel2",
+        "id": 109,
+        "partitionTemplatePartition": [
+            {
+                "id": 2118,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2120,
+                "isGrow": false,
+                "partitionName": "/tmp",
+                "partitionSize": "2",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2124,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2122,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2126,
+                "isGrow": false,
+                "partitionName": "/usr",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2128,
+                "isGrow": false,
+                "partitionName": "/var",
+                "partitionSize": "25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            },
+            {
+                "id": 2130,
+                "isGrow": true,
+                "partitionName": "/home",
+                "partitionSize": "191.8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 109
+            }
+        ],
+        "templateType": "CUSTOM"
+    },
+    {
+        "data": [
+            {
+                "id": 2144,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            },
+            {
+                "id": 2142,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            },
+            {
+                "id": 2140,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            }
+        ],
+        "description": "Linux Larger Swap",
+        "id": 138,
+        "partitionTemplatePartition": [
+            {
+                "id": 2140,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            },
+            {
+                "id": 2142,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "8",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            },
+            {
+                "id": 2144,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 138
+            }
+        ],
+        "templateType": "CUSTOM"
+    },
+    {
+        "data": [
+            {
+                "id": 2116,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            },
+            {
+                "id": 2114,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            },
+            {
+                "id": 2112,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            }
+        ],
+        "description": "linux 4GB swap",
+        "id": 163,
+        "partitionTemplatePartition": [
+            {
+                "id": 2112,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            },
+            {
+                "id": 2114,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "4",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            },
+            {
+                "id": 2116,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 163
+            }
+        ],
+        "templateType": "CUSTOM"
+    },
+    {
+        "data": [
+            {
+                "id": 2110,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            },
+            {
+                "id": 2108,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "12",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            },
+            {
+                "id": 2106,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            }
+        ],
+        "description": "linux 12GB swap",
+        "id": 226,
+        "partitionTemplatePartition": [
+            {
+                "id": 2106,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": ".25",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            },
+            {
+                "id": 2108,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "12",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            },
+            {
+                "id": 2110,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 226
+            }
+        ],
+        "templateType": "CUSTOM"
+    },
+    {
+        "data": [
+            {
+                "id": 3279,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "50",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3283,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3285,
+                "isGrow": true,
+                "partitionName": "/data",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3281,
+                "isGrow": false,
+                "partitionName": "/swap",
+                "partitionSize": "32",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            }
+        ],
+        "description": "boyaa",
+        "id": 485,
+        "partitionTemplatePartition": [
+            {
+                "id": 3283,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3281,
+                "isGrow": false,
+                "partitionName": "/swap",
+                "partitionSize": "32",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3279,
+                "isGrow": false,
+                "partitionName": "/",
+                "partitionSize": "50",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            },
+            {
+                "id": 3285,
+                "isGrow": true,
+                "partitionName": "/data",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 485
+            }
+        ],
+        "templateType": "CUSTOM"
+    },
+    {
+        "data": [
+            {
+                "id": 3457,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            },
+            {
+                "id": 3455,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "32",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            },
+            {
+                "id": 3453,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            }
+        ],
+        "description": "Upsight",
+        "id": 515,
+        "partitionTemplatePartition": [
+            {
+                "id": 3453,
+                "isGrow": false,
+                "partitionName": "/boot",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            },
+            {
+                "id": 3455,
+                "isGrow": false,
+                "partitionName": "/swap0",
+                "partitionSize": "32",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            },
+            {
+                "id": 3457,
+                "isGrow": true,
+                "partitionName": "/",
+                "partitionSize": "1",
+                "partitionTemplate": null,
+                "partitionTemplateId": 515
+            }
+        ],
+        "templateType": "CUSTOM"
+    }
+]
