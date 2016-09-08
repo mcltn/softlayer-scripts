@@ -35,7 +35,7 @@ client = Client(username=username, api_key=apiKey, endpoint_url=endpoint_url)
 #############################################################################
 
 tag = 'poc-image-test'
-datacenter = 'dal09'
+datacenter = 'mex01'
 
 #############################################################################
 #############################################################################
@@ -172,17 +172,24 @@ instance2Name = instance2['hostname']
 completed = False
 while completed == False:
 	time.sleep(60)
+	completed = True
 	print '.'
-	instance = getInstance(instance2Id)
-	if instance != None and instance.has_key('provisionDate') and instance['provisionDate'] != '':
-		completed = True
+	instances = getInstances()
+	for instance in instances:
+		if instance != None and instance.has_key('provisionDate') and instance['provisionDate'] != '':
+			completed = True
 
 
 # Cancel Both Instances
 print 'Pause for 2 minutes'
-time.sleep(120)
-cancelInstance(instance1Id)
-cancelInstance(instance2Id)
+time.sleep(1200)
+instances = getInstances(tag)
+for instance in instances:
+	try:
+		if instance['id'] != 0:
+			cancelInstance(instance['id'])
+	except:
+		print 'Skipping: ' + str(instance['id'])
 
 # Remove Image
 deleteImage(imageId)

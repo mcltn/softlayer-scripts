@@ -225,6 +225,8 @@ def provisionServers():
 								print results
 							if activeTransaction == 'SERVICE_SETUP':
 								results[instanceId]['provisionState'] = 'COMPLETED'
+					elif len(results[instanceId]['status']) > 2:
+						results[instanceId]['provisionState'] = 'COMPLETED'
 
 			# Check all servers for provisionState
 			exit = True

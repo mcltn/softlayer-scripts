@@ -1,0 +1,26 @@
+{
+    "domain": "colton.cc",
+    "datacenter": "dal09",
+    "cpus": 1,
+    "memory": 1024,
+    "disk": 100,
+    "localDisk": true,
+    "private": true,
+    "dedicated": true,
+    "hourly": true,
+    "tag": "poc-burst-dal09",
+    "privateVlan": 1347365,
+    "nicSpeed": 1000,
+    "postInstallUrl": "https://dal05.objectstorage.softlayer.net/v1/AUTH_80b509bb-98a1-4f29-8486-ec1313f95409/provisioning/post-prov.cmd?temp_url_sig=c4741efbe74b2747fe7a545999c3275208882450&temp_url_expires=1473887354",
+    "sshKey": "",
+    "osCode": "UBUNTU_LATEST",
+    "hosts": [
+        {
+            "hostname": "mcltn-dal09-1",
+            "privateIPAddress": "172.1.1.11"
+        },
+        {
+            "hostname": "mcltn-dal09-2",
+            "privateIPAddress": "172.1.1.11"
+        }    ]
+}

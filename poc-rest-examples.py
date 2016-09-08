@@ -18,6 +18,7 @@ else:
 	username = os.environ.get('SOFTLAYER_USERNAME', '')
 	apiKey = os.environ.get('SOFTLAYER_APIKEY','')
 
+
 #############################################################################
 #############################################################################
 
@@ -43,7 +44,7 @@ def getAccountSSHKey():
 	#url += '?objectFilter={"sshKeys":{"label":{"operation":"*= m"}}}'
 
 	#?url += '?objectFilter={"sshKeys":{"createDate":{"operation":">= 04/14/15"}}}'
-	url += '?objectFilter={"sshKeys":{"createDate":{"operation":"betweenDate","options":[{"name":"startDate","value":["1/1/2015 00:00:00"]},{"name":"endDate","value":["4/1/2015 23:59:59"]}]}}}'
+	#url += '?objectFilter={"sshKeys":{"createDate":{"operation":"betweenDate","options":[{"name":"startDate","value":["1/1/2015 00:00:00"]},{"name":"endDate","value":["4/1/2015 23:59:59"]}]}}}'
 
 	r = requests.get(url, auth=(username, apiKey))
 	result = r.json()
@@ -65,12 +66,21 @@ def getEventLog():
 	url = baseURL + '/SoftLayer_Event_Log/getAllObjects?resultLimit=0,10'
 	#url += '&objectFilter={"objectId":{"operation":277800}}'
 	#url += '&objectFilter={"objectId": {"operation": "in", "options": [{"name":"data", "value":[10368543]},{"name":"data", "value":[9956723]}] }}'
-	url += '?objectFilter={"Log":{"eventCreateDate":{"operation":"betweenDate","options":[{"name":"startDate","value":["4/1/2015 00:00:00"]},{"name":"endDate","value":["4/1/2015 23:59:59"]}]}}}}'
+	url += '?objectFilter={"Log":{"eventCreateDate":{"operation":"betweenDate","options":[{"name":"startDate","value":["10/28/2015 00:00:00"]},{"name":"endDate","value":["10/28/2015 23:59:59"]}]}}}}'
 	print url
 	r = requests.get(url, auth=(username, apiKey))
 	result = r.json()
 	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
 
+
+
+def getTransactionHistory(instanceId):
+	url = baseURL + '/SoftLayer_Hardware_Server/' + str(instanceId) + '/getTransactionHistory'
+	print url
+	r = requests.get(url, auth=(username, apiKey))
+	result = r.json()
+	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+	
 
 def getAccountVirtualServers():
 	url = baseURL + '/SoftLayer_Account/getVirtualGuests'
@@ -128,12 +138,12 @@ def getOSes():
 	for os in r.json():
 		if os['virtualizationPlatform'] == 0 and os['operatingSystem'] == 1:
 			oses.append(os)
-			#print os['referenceCode']
+			print os['referenceCode']
 	return oses
 
 
-def getProductPackageItemPrices():
-	url = baseURL + '/SoftLayer_Product_Package/142/getItemPrices'
+def getProductPackageItemPrices(packageId):
+	url = baseURL + '/SoftLayer_Product_Package/'+ str(packageId) +'/getItemPrices'
 	print url
 	r = requests.get(url, auth=(username, apiKey))
 	result = r.json()
@@ -155,6 +165,15 @@ def getProductPackageItems(packageId, mask='N'):
 		return r.json()
 	else:
 		return None
+
+
+def checkItemAvailability(itemPrice):
+	url = baseURL + '/SoftLayer_Product_Order/checkItemAvailability'
+	url += '?objectFilter={"itemPrices":['+ str(itemPrice) +']'
+	print url	
+	r = requests.get(url, auth=(username, apiKey))
+	result = r.json()
+	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
 
 
 def getPrivateImages():
@@ -198,6 +217,9 @@ def copyImageToLocation(imageId, datacenterId):
 
 def getServer(serverId):
 	url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId)
+
+	url += '?objectMask=mask[id, hostname, host, primaryBackendNetworkComponent[router], serverRoom, location]'
+
 	r = requests.get(url, auth=(username, apiKey))
 	if (r.status_code == 200):
 		result = r.json()
@@ -304,8 +326,74 @@ def placeProductOrder(locationId, priceId):
 
 
 
+def createTicket():
+	url = baseURL + '/SoftLayer_Ticket/createStandardTicket'
+
+
+	data = {'parameters':[{'accountId': 330544,'assignedUserId': 324830, 'subjectId':1021, 'attachedAdditionalEmails': [{'email': 'mcolton@us.ibm.com'}], 'attachedVirtualGuests': [{'id': 13659123}], 'notifyUserOnUpdateFlag': True, 'title': 'Just Testing','userEditableFlag': True}, 'Ignore, Just Testing API.']}
+
+	#data = {'parameters':[{'assignedUserId':324830, 'title':'Testing', 'contents':'Ignore, just testing API'}]}
+
+	
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	print r.status_code
+	print r.text
+	result = r.json()
+	print simplejson.dumps(result, sort_keys=True, indent=4 * ' ')
+
+
+##Tickets
+def getClosedTickets(sinceDate):
+	url = baseURL + '/SoftLayer_Ticket/TicketsClosedSinceDate/' + sinceDate
+	
+	#url += '?objectMask=mask[attachedHardware,attachedVirtualGuests,cancellationRequest[items],firstUpdate]'
+	url += '?objectMask=mask[firstUpdate]'
+
+	r = requests.get(url, auth=(username, apiKey))
+	print '*************'
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+
+## Antivirus Software
+def getVirtualServerAntivirusSoftware(serverId):
+	url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId) + '/getAntivirusSpywareSoftwareComponent'
+	r = requests.get(url, auth=(username, apiKey))
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	return r.json()
+
+def getAntivirusSoftwareComponent(softwareId):
+	url = baseURL + '/SoftLayer_Software_Component_AntivirusSpyware/' + str(softwareId) + '/getObject'
+	r = requests.get(url, auth=(username, apiKey))
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	return r.json()
+
+def updateAntivirusSoftwareComponent(softwareId, policy):
+	url = baseURL + '/SoftLayer_Software_Component_AntivirusSpyware/' + str(softwareId) + '/updateAntivirusSpywarePolicy'
+	data = {'parameters':[policy,True]}
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+	print r.status_code
+	print r.text
+	
+
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	return r.json()
+
+
+
+
+# Invoices
+
+def getAccountInvoices():
+	url = baseURL + '/SoftLayer_Account/getInvoices?resultLimit=0,2&objectMask=mask[id]'
+	r = requests.get(url, auth=(username, apiKey))
+	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	return r.json()
+
+
 #############################################################################
 #############################################################################
+
 
 
 #getAccount()
@@ -313,11 +401,63 @@ def placeProductOrder(locationId, priceId):
 #getAccountSSHKey()
 #getAccountVirtualServers()
 #getEventLog()
+
+#getTransactionHistory(514575)
+
+#getServer(13640131)
+#getTransactionHistory(13640131)
+
 #getServerPassword()
 #getHubNetworkStorage()
 #getActivePackages()
 #getProductPackageItemPrices()
 #createImageTemplate(11495057)
+
+#getOSes()
+
+
+getAccountInvoices()
+
+
+# Antivirus
+serverId = 17561395 #17904879
+#a = getVirtualServerAntivirusSoftware(serverId)
+##b = getAntivirusSoftwareComponent(a['id'])
+#c = updateAntivirusSoftwareComponent(a['id'],'1')
+
+
+
+hostprefix = 'aa-std-'
+domain = 'colton.cc'
+startCpus = 8
+maxMemory = 16384
+useLocalDisk = False
+usePrivateNetworkOnly = True
+useHourlyBilling = True
+datacenter = 'mex01'
+operatingSystemReferenceCode = ''
+sshKeys = []
+privateVlan = 1222747
+imageId = 'af7b162b-e277-4424-aed4-fe004067d9e5'
+#imageId = 'fbfc7eba-6585-4880-b4bc-79f6953769e7'
+
+i = 1
+#while i <= 20:
+#	hostname = hostprefix + str(i)
+#	createServer(hostname, domain, startCpus, maxMemory, useLocalDisk, usePrivateNetworkOnly, useHourlyBilling, datacenter, operatingSystemReferenceCode, sshKeys, privateVlan, imageId)
+#	i += 1
+
+
+
+#getProductPackageItems(46)
+# 899 - 1 Gbps private
+
+
+#groupId 1012
+#22830457
+#getClosedTickets('2015-10-9T00:00:00')
+#getServer(13208749)
+
 
 #server = getServer(11581401)
 #server['notes'] = 'Testing notes'
@@ -333,8 +473,12 @@ def placeProductOrder(locationId, priceId):
 #print simplejson.dumps(locs, sort_keys=True, indent=4 * ' ')
 
 #copyImageToLocation(498987, 37473) #wdc01
-copyImageToLocation(498987, 449612) #syd01
+#copyImageToLocation(498987, 449612) #syd01
 
-#copyImageToLocation(642995, 168642) #sjc01
+#copyImageToLocation(876941, 168642) #sjc01
 
+#createTicket()
+
+#getProductPackageItemPrices(46)
+#checkItemAvailability(471)
 

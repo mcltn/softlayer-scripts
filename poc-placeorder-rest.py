@@ -4,16 +4,27 @@ base_url = 'https://api.softlayer.com/rest/v3'
 username = os.environ.get('SOFTLAYER_USERNAME', '')
 api_key = os.environ.get('SOFTLAYER_APIKEY','')
 
+placeOrder = False
+
+qty = 1
+hostname = "aa-mcltn"
+domain = "colton.cc"
+
+datacenter = 'wdc01'
+privateVlan = 442426 #856
+#privateVlan = 1222477 #786
+
+ #900 #873 #900 904
 
 
-datacenter = 'mex01'
-cpu_name = '4 x 2.0 GHz Cores'
-ram_name = '16 GB RAM'
-disk_name = '100 GB (LOCAL)'
-os_name = 'Windows Server 2012 Standard Edition (64 bit)'
+
+cpu_name = '8 x 2.0 GHz Cores'
+ram_name = '16 GB'
+disk_name = '100 GB (SAN)'
+os_name = 'Windows Server 2012 R2 Standard Edition (64 bit)' #'Windows Server 2012 Standard Edition (64 bit)'
 bandwidth_name = '0 GB Bandwidth'
-nic_name = '1 Gbps Private Network Uplink'
-virusscan_name = 'McAfee VirusScan Enterprise'
+nic_name = '100 Mbps Private Network Uplink'
+#virusscan_name = 'McAfee VirusScan Enterprise'
 
 
 # Get Active Package For Cloud
@@ -21,7 +32,7 @@ cloud_package_id = 0
 url = base_url + '/SoftLayer_Account/getActivePackages'
 r = requests.get(url, auth=(username, api_key))
 packages = r.json()
-#print simplejson.dumps(packages, sort_keys=True, indent=4 * ' ')
+print simplejson.dumps(packages, sort_keys=True, indent=4 * ' ')
 for package in packages:
 	if package['name'] == 'Cloud Server':
 		cloud_package_id = package['id']
@@ -49,26 +60,23 @@ configs = r.json()
 
 #Prices
 url = base_url + '/SoftLayer_Product_Package/'+ str(cloud_package_id) +'/getItemPrices'
-url += '?objectMask=mask[id,item.description,categories.id,locationGroupId,pricingLocationGroup[locations[id, name, longName]]]'
+url += '?objectMask=mask[id,item.description,categories.id,attributes,locationGroupId,pricingLocationGroup[locations[id, name, longName]]]'
 #url += '&objectFilter={"itemPrices":{"pricingLocationGroup":{"locations":{"id":{"operation":"'+ str(dc_id) +'"}}}}}'
 
 r = requests.get(url, auth=(username, api_key))
 item_prices = r.json()
-#print '\n'
-#print simplejson.dumps(item_prices, sort_keys=True, indent=4 * ' ')
+print '\n'
+print simplejson.dumps(item_prices, sort_keys=True, indent=4 * ' ')
 print '\n\n\n\n'
 
 
-qty = 1
-hostname = "aa-mcltn"
-domain = "colton.cc"
 data = {"parameters":[{"packageId": cloud_package_id,"location":dc_id,"quantity":qty,"hardware":[{"hostname":hostname,"domain":domain}],"prices":[]}]}
 
 complete_categories = []
 
 # Loop through Configs and get a Price
 for config in configs:
-	if config['isRequired'] == 1 or config['itemCategory']['categoryCode'] == 'av_spyware_protection':
+	if config['isRequired'] == 1: #or config['itemCategory']['categoryCode'] == 'av_spyware_protection':
 		for item_price in item_prices:
 			if 'categories' in item_price:
 				if any(d['id'] == config['itemCategory']['id'] for d in item_price['categories']):
@@ -95,6 +103,7 @@ for config in configs:
 
 							#OS
 							elif item_price['item']['description'] == os_name :
+
 								data['parameters'][0]['prices'].append({'id':item_price['id']})
 								complete_categories.append(config['itemCategory']['name'])
 
@@ -109,9 +118,9 @@ for config in configs:
 								complete_categories.append(config['itemCategory']['name'])
 
 							#Virus Scan							
-							elif item_price['item']['description'] == virusscan_name :
-								data['parameters'][0]['prices'].append({'id':item_price['id']})
-								complete_categories.append(config['itemCategory']['name'])
+							#elif item_price['item']['description'] == virusscan_name :
+							#	data['parameters'][0]['prices'].append({'id':item_price['id']})
+							#	complete_categories.append(config['itemCategory']['name'])
 						
 		
 		# Add other required
@@ -124,6 +133,11 @@ for config in configs:
 							complete_categories.append(config['itemCategory']['name'])
 
 
+data['parameters'][0]['useHourlyPricing'] = True
+vlan = {'networkVlanId': privateVlan}
+data['parameters'][0]['hardware'][0]['primaryBackendNetworkComponent'] = vlan
+
+
 print simplejson.dumps(data, sort_keys=True, indent=4 * ' ')
 
 # Verify Order
@@ -134,5 +148,16 @@ if r.status_code == 200:
 	print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
 else:
 	print r.text
+
+
+# Place Order
+if placeOrder:
+	url = base_url + '/SoftLayer_Product_Order/placeOrder'
+	headers = {'Accept':'application/json','Content-Type':'application/json'}
+	r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, api_key))
+	if r.status_code == 200:
+		print simplejson.dumps(r.json(), sort_keys=True, indent=4 * ' ')
+	else:
+		print r.text
 
 
