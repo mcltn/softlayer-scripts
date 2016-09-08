@@ -6,6 +6,25 @@ import SoftLayer
 from SoftLayer import VSManager, ImageManager, Client
 from datetime import datetime
 
+
+#################################################
+#################################################
+### Examples:
+###
+### Create from Config File
+### python softlayer-burst.py --username myusername --apiKey myapikey --action CREATE --configFile config-dal09p6.json
+###
+### Cancel by tag
+### python softlayer-burst.py --username myusername --apiKey myapikey --action CANCEL --tag poc-burst
+###
+### Get Server UserData
+### python softlayer-burst.py --username myusername --apiKey myapikey --action GET_USERDATA --serverId 24110049
+###
+###
+#################################################
+#################################################
+
+
 argParser = argparse.ArgumentParser()
 
 argParser.add_argument("--username", default="")
