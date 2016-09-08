@@ -9,6 +9,12 @@ from datetime import datetime
 
 #################################################
 #################################################
+### Requirements:
+###
+### SoftLayer Python Library
+### https://softlayer-api-python-client.readthedocs.io/en/latest/
+###
+###
 ### Examples:
 ###
 ### Create from Config File
