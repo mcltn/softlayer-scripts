@@ -91,6 +91,8 @@ endpoint_url = SoftLayer.API_PUBLIC_ENDPOINT
 def listImages():
     imgManager = ImageManager(client)
     imgs = imgManager.list_private_images()
+
+    print simplejson.dumps(imgs, sort_keys=True, indent=4 * ' ')
     return imgs
 
 
@@ -219,8 +221,9 @@ def getVirtualGuestUserData(id):
     print 'Getting user data'
     userdata = client['SoftLayer_Virtual_Guest'].getUserData(id=id)
     json = simplejson.loads(userdata[0]['value'])
-    print json['hostname']
-    print json['privateIPAddress']
+    #print json['hostname']
+    #print json['privateIPAddress']
+    print simplejson.dumps(json, sort_keys=True, indent=4 * ' ')
     return userdata
 
 
