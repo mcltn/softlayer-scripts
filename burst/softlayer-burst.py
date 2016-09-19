@@ -3,7 +3,7 @@
 import os, sys, time, argparse, simplejson
 import ConfigParser
 import SoftLayer
-from SoftLayer import VSManager, ImageManager, Client
+from SoftLayer import VSManager, ImageManager, NetworkManager, Client
 from datetime import datetime
 
 
@@ -94,6 +94,14 @@ def listImages():
 
     print simplejson.dumps(imgs, sort_keys=True, indent=4 * ' ')
     return imgs
+
+
+def listVlans():
+    netManager = NetworkManager(client)
+    vlans = netManager.list_vlans()
+
+    print simplejson.dumps(vlans, sort_keys=True, indent=4 * ' ')
+    return vlans
 
 
 def getCreateOptions():
@@ -260,6 +268,9 @@ else:
     elif (args.action == 'LIST_IMAGES'):
         print 'Listing images...'
         listImages()
+    elif (args.action == 'LIST_VLANS'):
+        print 'Listing VLANs...'
+        listVlans()
     elif (args.action == 'CAPTURE'):
         print 'Capturing server...'
         #captureImage()
