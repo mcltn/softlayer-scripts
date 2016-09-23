@@ -86,7 +86,7 @@ Write-Host " IP Address : $ip"
 " Updating Private NIC Address "
 ###############################
 $privateNic = Get-NetAdapter -Name "PrivateNetwork-A"
-$slIP = $privateNic.IPv4Address.IPAddress
+$slIP = ($privateNic | Get-NetIPAddress | ?AddressFamily IPv4).IPAddress
 $privateNic | New-NetIPAddress -AddressFamily IPv4 -IPAddress $ip -PrefixLength 24 -Type Unicast #-DefaultGateway $gateway
 if (!$?)
 {
