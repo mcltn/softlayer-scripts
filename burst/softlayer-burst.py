@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, time, argparse, simplejson
+import os, sys, time, argparse, json
 import ConfigParser
 import SoftLayer
 from SoftLayer import VSManager, ImageManager, NetworkManager, Client
@@ -36,7 +36,7 @@ argParser = argparse.ArgumentParser()
 argParser.add_argument("--username", default="")
 argParser.add_argument("--apiKey", default="")
 
-argParser.add_argument("--action", default="CREATE", choices=['GET', 'GET_USERDATA', 'LIST', 'LIST_IMAGES', 'CREATE', 'CAPTURE', 'CANCEL'])
+argParser.add_argument("--action", default="CREATE", choices=['GET', 'GET_USERDATA', 'LIST', 'LIST_IMAGES', 'LIST_VLANS', 'CREATE', 'CAPTURE', 'CANCEL'])
 
 argParser.add_argument("--configFile")
 
@@ -83,8 +83,6 @@ argParser.add_argument("--waitForCompletion", action="store_true")
 args = argParser.parse_args()
 
 
-endpoint_url = SoftLayer.API_PUBLIC_ENDPOINT
-
 #############################################################################
 #############################################################################
 
@@ -92,7 +90,7 @@ def listImages():
     imgManager = ImageManager(client)
     imgs = imgManager.list_private_images()
 
-    print simplejson.dumps(imgs, sort_keys=True, indent=4 * ' ')
+    print json.dumps(imgs, sort_keys=True, indent=4)
     return imgs
 
 
@@ -100,7 +98,7 @@ def listVlans():
     netManager = NetworkManager(client)
     vlans = netManager.list_vlans()
 
-    print simplejson.dumps(vlans, sort_keys=True, indent=4 * ' ')
+    print json.dumps(vlans, sort_keys=True, indent=4)
     return vlans
 
 
@@ -113,14 +111,14 @@ def getCreateOptions():
 def getInstance(id):
     vsManager = VSManager(client)
     instance = vsManager.get_instance(id)
-    print simplejson.dumps(instance, sort_keys=True, indent=4 * ' ')
+    print json.dumps(instance, sort_keys=True, indent=4)
     return instance
 
 
 def getInstances(tag):
     vsManager = VSManager(client)
     instances = vsManager.list_instances(tags = [tag])
-    print simplejson.dumps(instances, sort_keys=True, indent=4 * ' ')
+    print json.dumps(instances, sort_keys=True, indent=4)
     return instances
 
 
@@ -147,12 +145,11 @@ def captureImage(instanceId, name, additional_disks, notes):
     return image.id # Returns just a transaction Id / Not the actual Image Id ??
 
 
-def orderServer(hostname, domain, cpus, memory, disk, osCode, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl):
+def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl):
 
     disks = []
     disks.append(disk)
 
-    templateGuid = ''
     if (osCode != None and osCode != ''):
         templateGuid = ''
     else:
@@ -191,33 +188,34 @@ def provisionServersFromConfig():
     print 'Begin: ' + time.strftime('%Y-%m-%d %I:%M:%S %Z')
     
     jsonFile = open(args.configFile).read()
-    configJson = simplejson.loads(jsonFile)
-    print simplejson.dumps(configJson, sort_keys=True, indent=4 * ' ')
+    configJson = json.loads(jsonFile)
+    print json.dumps(configJson, sort_keys=True, indent=4)
 
     for host in configJson['hosts']:
 
         hostname = host.get('hostname')
-        domain = host.get('domain', configJson['domain'])
-        cpus = host.get('cpus', configJson['cpus'])
-        memory = host.get('memory', configJson['memory'])
-        disk = host.get('disk', configJson['disk'])
-        osCode = host.get('osCode', configJson['osCode'])
-        useLocalDisk = host.get('localDisk', configJson['localDisk'])
-        datacenter = host.get('datacenter', configJson['datacenter'])
-        private = host.get('private', configJson['private'])
-        dedicated = host.get('dedicated', configJson['dedicated'])
-        hourly = host.get('hourly', configJson['hourly'])
-        tag = host.get('tag', configJson['tag'])
-        privateVlan = host.get('privateVlan', configJson['privateVlan'])
-        nicSpeed = host.get('nicSpeed', configJson['nicSpeed'])
-        sshKey = host.get('sshKey', configJson['sshKey'])
-        postInstallUrl = host.get('postInstallUrl', configJson['postInstallUrl'])
-
         privateIPAddress = host.get('privateIPAddress')
+
+        domain = host.get('domain', configJson.get('domain','domain.com'))
+        cpus = host.get('cpus', configJson.get('cpus',1))
+        memory = host.get('memory', configJson.get('memory',1024))
+        disk = host.get('disk', configJson.get('disk',25))
+        osCode = host.get('osCode', configJson.get('osCode',''))
+        templateGuid = host.get('templateGuid', configJson.get('templateGuid',''))
+        useLocalDisk = host.get('localDisk', configJson.get('localDisk', True))
+        datacenter = host.get('datacenter', configJson.get('datacenter', 'dal10'))
+        private = host.get('private', configJson.get('private', False))
+        dedicated = host.get('dedicated', configJson.get('dedicated', False))
+        hourly = host.get('hourly', configJson.get('hourly', True))
+        tag = host.get('tag', configJson.get('tag',''))
+        privateVlan = host.get('privateVlan', configJson.get('privateVlan',''))
+        nicSpeed = host.get('nicSpeed', configJson.get('nicSpeed',100))
+        sshKey = host.get('sshKey', configJson.get('sshKey',''))
+        postInstallUrl = host.get('postInstallUrl', configJson.get('postInstallUrl',''))
 
         userData = '{"hostname": "' + str(hostname) + '", "privateIPAddress": "' + str(privateIPAddress) + '"}'
 
-        createdInstance = orderServer(hostname, domain, cpus, memory, disk, osCode, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl)
+        createdInstance = orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl)
         createdId = createdInstance['id']
         if (args.verbose):
             print 'Built Server: ' + str(createdId)
@@ -228,55 +226,45 @@ def provisionServersFromConfig():
 def getVirtualGuestUserData(id):
     print 'Getting user data'
     userdata = client['SoftLayer_Virtual_Guest'].getUserData(id=id)
-    json = simplejson.loads(userdata[0]['value'])
-    #print json['hostname']
-    #print json['privateIPAddress']
-    print simplejson.dumps(json, sort_keys=True, indent=4 * ' ')
+    jsonData = json.loads(userdata[0]['value'])
+    #print jsonData['hostname']
+    #print jsonData['privateIPAddress']
+    print json.dumps(jsonData, sort_keys=True, indent=4)
     return userdata
 
 
 #############################################################################
 #############################################################################
 
-username = ''
-apiKey = ''
-
 if (args.username != ''):
-    username = args.username
-    apiKey = args.apiKey
+    client = Client(username=args.username, api_key=args.apiKey, endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
 else:
-    username = os.environ.get('SOFTLAYER_USERNAME', '')
-    apiKey = os.environ.get('SOFTLAYER_APIKEY','')
+    client = Client()
 
-if (username == '' or apiKey == ''):
-    print 'Please specify a username and apiKey\n'
-else:
-    client = Client(username=username, api_key=apiKey, endpoint_url=endpoint_url)
-
-    if (args.action == 'GET'):
-        print 'Getting server...'
-        getInstance(args.serverId)
-    elif (args.action == 'GET_USERDATA'):
-        print 'Getting server metadata...'
-        getVirtualGuestUserData(args.serverId)
-    elif (args.action == 'LIST'):
-        print 'Listing servers...'
-        getInstances(args.tag)
-    elif (args.action == 'CREATE'):
-        print 'Creating servers...'
-        provisionServersFromConfig()
-    elif (args.action == 'LIST_IMAGES'):
-        print 'Listing images...'
-        listImages()
-    elif (args.action == 'LIST_VLANS'):
-        print 'Listing VLANs...'
-        listVlans()
-    elif (args.action == 'CAPTURE'):
-        print 'Capturing server...'
-        #captureImage()
-    elif (args.action == 'CANCEL'):
-        print 'Canceling servers...'
-        if (args.tag != None and args.tag != ''):
-            cancelServers(args.tag)
-        if (args.serverId != None):
-            cancelInstance(args.serverId)
+if (args.action == 'GET'):
+    print 'Getting server...'
+    getInstance(args.serverId)
+elif (args.action == 'GET_USERDATA'):
+    print 'Getting server metadata...'
+    getVirtualGuestUserData(args.serverId)
+elif (args.action == 'LIST'):
+    print 'Listing servers...'
+    getInstances(args.tag)
+elif (args.action == 'CREATE'):
+    print 'Creating servers...'
+    provisionServersFromConfig()
+elif (args.action == 'LIST_IMAGES'):
+    print 'Listing images...'
+    listImages()
+elif (args.action == 'LIST_VLANS'):
+    print 'Listing VLANs...'
+    listVlans()
+elif (args.action == 'CAPTURE'):
+    print 'Capturing server...'
+    #captureImage()
+elif (args.action == 'CANCEL'):
+    print 'Canceling servers...'
+    if (args.tag != None and args.tag != ''):
+        cancelServers(args.tag)
+    if (args.serverId != None):
+        cancelInstance(args.serverId)
