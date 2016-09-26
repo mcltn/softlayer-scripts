@@ -183,8 +183,8 @@ def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useL
     if (sshKey != None and sshKey != ''):
         sshKeys.append(sshKey)
 
-    url = self.baseURL + '/SoftLayer_Virtual_Guest'
-    data = {"parameters": [ {"hostname": hostname, "domain": domain, "startCpus": cpus, "maxMemory": memory, "localDiskFlag": useLocalDisk, "dedicated": dedicated, "privateNetworkOnlyFlag": private, "hourlyBillingFlag": hourly, "datacenter":{"name":datacenter}} ]}
+    url = baseURL + '/SoftLayer_Virtual_Guest'
+    data = {"parameters": [ {"hostname": hostname, "domain": domain, "startCpus": cpus, "maxMemory": memory, "localDiskFlag": useLocalDisk, "privateNetworkOnlyFlag": private, "hourlyBillingFlag": hourly, "datacenter":{"name":datacenter}} ]}
 
     if len(sshKeys) > 0:
         keys = []
@@ -193,21 +193,21 @@ def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useL
         data['parameters'][0]['sshKeys'] = keys
 
     if privateVlan is not None:
-        vlan = {"networkVlanId": privateVlan}
+        vlan = {'networkVlan': {'id':privateVlan}}
         data['parameters'][0]['primaryBackendNetworkComponent'] = vlan
 
-    if operatingSystemReferenceCode != "":
+    if osCode != "":
         data['parameters'][0]['blockDevices'] = [{"device":0, "diskImage": {"capacity":disk}}]
-        data['parameters'][0]['operatingSystemReferenceCode'] = operatingSystemReferenceCode
+        data['parameters'][0]['operatingSystemReferenceCode'] = osCode
 
-    if imageId != "" and operatingSystemReferenceCode == "":
+    if templateGuid != "" and osCode == "":
         data['parameters'][0]['blockDeviceTemplateGroup'] = {"globalIdentifier": templateGuid}
 
     data['parameters'][0]['networkComponents'] = [{"maxSpeed":nicSpeed}]
 
-    print json.dumps(data, sort_keys=True, indent=4 * ' ')
+    print json.dumps(data, sort_keys=True, indent=4)
     headers = {'Accept':'application/json','Content-Type':'application/json'}
-    r = requests.post(url, data=json.dumps(data), headers=headers, auth=(self.username, self.apiKey))
+    r = requests.post(url, data=json.dumps(data), headers=headers, auth=(username, apiKey))
     #print r.status_code
     #print r.json()
     #print '\n\n'
