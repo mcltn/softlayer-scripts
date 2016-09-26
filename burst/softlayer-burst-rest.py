@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import os, sys, time, argparse, json
+import os, sys, time, argparse, json, requests
 import ConfigParser
-import SoftLayer
-from SoftLayer import VSManager, ImageManager, NetworkManager, Client
 from datetime import datetime
 
 
@@ -42,7 +40,7 @@ argParser.add_argument("--configFile")
 
 
 argParser.add_argument("--serverId", type=int)
-argParser.add_argument("--tag", default="poc-burst")
+argParser.add_argument("--tag", default="")
 
 
 argParser.add_argument("--hostname", default="poc")
@@ -82,50 +80,65 @@ argParser.add_argument("--waitForCompletion", action="store_true")
 
 args = argParser.parse_args()
 
+baseURL = 'https://api.softlayer.com/rest/v3'
+username = args.username
+apiKey = args.apiKey
+
 
 #############################################################################
 #############################################################################
 
 def listImages():
-    imgManager = ImageManager(client)
-    imgs = imgManager.list_private_images()
-
+    url = baseURL + '/SoftLayer_Account/getBlockDeviceTemplateGroups?objectMask=mask[datacenter]'
+    r = requests.get(url, auth=(username, apiKey))
+    imgs = r.json()
     print json.dumps(imgs, sort_keys=True, indent=4)
     return imgs
 
 
 def listVlans():
-    netManager = NetworkManager(client)
-    vlans = netManager.list_vlans()
-
+    url = baseURL + '/SoftLayer_Account/getNetworkVlans'
+    r = requests.get(url, auth=(username, apiKey))
+    vlans = r.json()
     print json.dumps(vlans, sort_keys=True, indent=4)
     return vlans
 
 
-def getCreateOptions():
-    vsManager = VSManager(client)
-    options = vsManager.get_create_options()
-    return options
+def getInstance(serverId):
+    url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId)
 
+    url += '?objectMask=mask[id, hostname, host, primaryBackendNetworkComponent[router], serverRoom, location]'
 
-def getInstance(id):
-    vsManager = VSManager(client)
-    instance = vsManager.get_instance(id)
-    print json.dumps(instance, sort_keys=True, indent=4)
-    return instance
+    r = requests.get(url, auth=(username, apiKey))
+    if (r.status_code == 200):
+        result = r.json()
+        print json.dumps(result, sort_keys=True, indent=4)
+        return result
+    else:
+        return None
 
 
 def getInstances(tag):
-    vsManager = VSManager(client)
-    instances = vsManager.list_instances(tags = [tag])
-    print json.dumps(instances, sort_keys=True, indent=4)
-    return instances
+    if (tag == None or tag == ''):
+        print 'Getting all virtual servers'
+        url = baseURL + '/SoftLayer_Account/getVirtualGuests'
+    else:
+        print 'Getting servers by tag'
+        url = baseURL + '/SoftLayer_Account/getVirtualGuests?objectFilter={"virtualGuests":{"tagReferences":{"tag":{"name":{"operation":"in","options":[{"name": "data", "value": ["'+ tag +'"]}]}}}}}'
+    r = requests.get(url, auth=(username, apiKey))
+    result = r.json()
+    print json.dumps(result, sort_keys=True, indent=4)
+    return result
 
 
-def cancelInstance(id):
-    vsManager = VSManager(client)
-    vsManager.cancel_instance(id)
-    print 'Canceling: ' + str(id)
+def cancelInstance(serverId):
+    url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId)
+    r = requests.delete(url, auth=(username, apiKey))
+    if (r.status_code == 200):
+        print 'Cancelled: ' + str(serverId)
+        return True
+    else:
+        return False
 
 
 def cancelServers(tag):
@@ -139,10 +152,20 @@ def cancelServers(tag):
 
 
 def captureImage(instanceId, name, additional_disks, notes):
-    vsManager = VSManager(client)
-    image = vsManager.capture(instanceId, name, additional_disks, notes)
-    print 'Creating Image: ' + name
-    return image.id # Returns just a transaction Id / Not the actual Image Id ??
+    url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId) + '/getBlockDevices?objectMask=mask[diskImage]'
+    r = requests.get(url, auth=(username, apiKey))
+    result = r.json()
+    print json.dumps(result, sort_keys=True, indent=4)
+
+    blockId = result[0]['id']
+    print str(blockId)
+
+    url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId) + '/createArchiveTransaction'
+    data = {'parameters':['given-image-name',[{'id': blockId}],'given-notes-info']}
+    headers = {'Accept':'application/json','Content-Type':'application/json'}
+    r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+    result = r.json()
+    print json.dumps(result, sort_keys=True, indent=4)
 
 
 def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl):
@@ -160,28 +183,40 @@ def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useL
     if (sshKey != None and sshKey != ''):
         sshKeys.append(sshKey)
 
-    vsManager = VSManager(client)
-    instance = vsManager.create_instance(
-        hostname = hostname,
-        domain = domain,
-        cpus = cpus,
-        memory = memory,
-        hourly = hourly,
-        datacenter = datacenter,
-        os_code = osCode,
-        image_id = templateGuid,
-        local_disk = useLocalDisk,
-        disks = disks,
-        ssh_keys = sshKeys,
-        nic_speed = nicSpeed,
-        private = private,
-        private_vlan = privateVlan,
-        dedicated = dedicated,
-        post_uri = postInstallUrl,
-        userdata = userData,
-        tags = tag)
+    url = self.baseURL + '/SoftLayer_Virtual_Guest'
+    data = {"parameters": [ {"hostname": hostname, "domain": domain, "startCpus": cpus, "maxMemory": memory, "localDiskFlag": useLocalDisk, "dedicated": dedicated, "privateNetworkOnlyFlag": private, "hourlyBillingFlag": hourly, "datacenter":{"name":datacenter}} ]}
 
-    return instance
+    if len(sshKeys) > 0:
+        keys = []
+        for key in sshKeys:
+            keys.append({"id": key})
+        data['parameters'][0]['sshKeys'] = keys
+
+    if privateVlan is not None:
+        vlan = {"networkVlanId": privateVlan}
+        data['parameters'][0]['primaryBackendNetworkComponent'] = vlan
+
+    if operatingSystemReferenceCode != "":
+        data['parameters'][0]['blockDevices'] = [{"device":0, "diskImage": {"capacity":disk}}]
+        data['parameters'][0]['operatingSystemReferenceCode'] = operatingSystemReferenceCode
+
+    if imageId != "" and operatingSystemReferenceCode == "":
+        data['parameters'][0]['blockDeviceTemplateGroup'] = {"globalIdentifier": templateGuid}
+
+    data['parameters'][0]['networkComponents'] = [{"maxSpeed":nicSpeed}]
+
+    print simplejson.dumps(data, sort_keys=True, indent=4 * ' ')
+    headers = {'Accept':'application/json','Content-Type':'application/json'}
+    r = requests.post(url, data=json.dumps(data), headers=headers, auth=(self.username, self.apiKey))
+    #print r.status_code
+    #print r.json()
+    #print '\n\n'
+    if (r.status_code == 201):
+        return r.json()
+    else:
+        print r.status_code
+        print r.text
+        return None
 
 
 def provisionServersFromConfig():
@@ -225,21 +260,16 @@ def provisionServersFromConfig():
 
 def getVirtualGuestUserData(id):
     print 'Getting user data'
-    userdata = client['SoftLayer_Virtual_Guest'].getUserData(id=id)
-    jsonData = json.loads(userdata[0]['value'])
-    #print jsonData['hostname']
-    #print jsonData['privateIPAddress']
-    print json.dumps(jsonData, sort_keys=True, indent=4)
-    return userdata
+    url = baseURL + '/SoftLayer_Virtual_Guest/' + str(id) +'/getUserData'
+    r = requests.get(url, auth=(username, apiKey))
+    result = r.json()
+    print json.dumps(result, sort_keys=True, indent=4)
+    return result
 
 
 #############################################################################
 #############################################################################
 
-if (args.username != ''):
-    client = Client(username=args.username, api_key=args.apiKey, endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
-else:
-    client = Client(endpoint_url=SoftLayer.API_PUBLIC_ENDPOINT)
 
 if (args.action == 'GET'):
     print 'Getting server...'
