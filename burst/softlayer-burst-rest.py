@@ -163,7 +163,7 @@ def captureImage(instanceId, name, additional_disks, notes):
     url = baseURL + '/SoftLayer_Virtual_Guest/' + str(serverId) + '/createArchiveTransaction'
     data = {'parameters':['given-image-name',[{'id': blockId}],'given-notes-info']}
     headers = {'Accept':'application/json','Content-Type':'application/json'}
-    r = requests.post(url, data=simplejson.dumps(data), headers=headers, auth=(username, apiKey))
+    r = requests.post(url, data=json.dumps(data), headers=headers, auth=(username, apiKey))
     result = r.json()
     print json.dumps(result, sort_keys=True, indent=4)
 
@@ -205,7 +205,7 @@ def orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useL
 
     data['parameters'][0]['networkComponents'] = [{"maxSpeed":nicSpeed}]
 
-    print simplejson.dumps(data, sort_keys=True, indent=4 * ' ')
+    print json.dumps(data, sort_keys=True, indent=4 * ' ')
     headers = {'Accept':'application/json','Content-Type':'application/json'}
     r = requests.post(url, data=json.dumps(data), headers=headers, auth=(self.username, self.apiKey))
     #print r.status_code
