@@ -10,7 +10,7 @@ $serverName
 ""
 
 $domainName = "domain.local"
-$dnsServers = ("172.16.0.11")
+$dnsServers = ("10.0.80.11,10.0.80.12,172.16.0.11")
 $gateway = "172.16.0.1"
 $OUPath = "OU=CloudServers,DC=dev"
 
@@ -86,7 +86,7 @@ Write-Host " IP Address : $ip"
 " Updating Private NIC Address "
 ###############################
 $privateNic = Get-NetAdapter -Name "PrivateNetwork-A"
-$slIP = ($privateNic | Get-NetIPAddress | ?AddressFamily IPv4).IPAddress
+$slIP = ($privateNic | Get-NetIPAddress -AddressFamily IPv4).IPAddress
 $privateNic | New-NetIPAddress -AddressFamily IPv4 -IPAddress $ip -PrefixLength 24 -Type Unicast #-DefaultGateway $gateway
 if (!$?)
 {
