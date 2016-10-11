@@ -1,0 +1,1 @@
+@@PowerShell -ExecutionPolicy ByPass c:\prov\post-provision.ps1
