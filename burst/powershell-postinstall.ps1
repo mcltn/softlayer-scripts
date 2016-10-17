@@ -14,18 +14,6 @@ $dnsServers = ("10.0.80.11,10.0.80.12,172.16.0.11")
 $gateway = "172.16.0.1"
 $OUPath = "OU=CloudServers,DC=dev"
 
-######################################################
-# Credentials
-# This needs to be hardcoded or pulled from a resource
-######################################################
-#$cred = Get-Credential
-#read-host -AsSecureString | ConvertFrom-SecureString | out-file c:\users\developer\securestring.txt
-
-$username = "testaccount"
-$password = cat c:\users\developer\securestring.txt | ConvertTo-SecureString
-$cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username, $password
-
-
 $pauseTime = 5  #Seconds
 $sleepTime = 60 #Seconds
 
@@ -33,9 +21,6 @@ $sleepTime = 60 #Seconds
 ####################
 # Functions
 ####################
-function myPause() {
-    Sleep -Seconds $pauseTime
-}
 
 ##################################
 ##################################
@@ -109,20 +94,8 @@ $privateNic | Set-DnsClientServerAddress -ServerAddresses $dnsServers
 Sleep -Seconds $pauseTime
 
 ############################
-" Add to Domain "
+" Reboot Server ?? "
 ############################
-try {
-    Add-Computer -DomainName $domainName -Credential $cred -OUPath $OUPath 2>&1
-} catch {
-    "Error adding to domain"
-}
-
-
-############################
-" Reboot Server "
-############################
-
-Sleep -Seconds $pauseTime
 #Restart-Computer -Force
 
 exit
