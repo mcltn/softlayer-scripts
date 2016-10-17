@@ -1,5 +1,6 @@
 #Set-ExecutionPolicy Unrestricted
 #[Byte[]] $key = (1..16)
+#Read-Host -AsSecureString | ConvertFrom-SecureString -Key $key | out-file c:\prov\securestring.txt
 #Invoke-Command -FilePath 'c:\prov\join-domain.ps1' -ComputerName 'localhost' -ArgumentList 'domain','username','password',$key,'OU=CloudServers,DC=dev'
 
 param([string]$domainName, [string]$username, [string]$password, [byte[]]$key, [string]$OUPath)
