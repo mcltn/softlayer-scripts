@@ -1,0 +1,25 @@
+{
+    "domain": "colton.cc",
+    "datacenter": "mex01",
+    "cpus": 2,
+    "memory": 2048,
+    "disk": 100,
+    "localDisk": true,
+    "private": false,
+    "dedicated": false,
+    "hourly": true,
+    "tag": "poc-burst-mex01",
+    "privateVlan": 1251967,
+    "nicSpeed": 100,
+    "sshKey": "",
+    "osCode": "",
+    "templateGuid": "b06db701-770a-4a26-89eb-1f4650095ef2",
+    "postInstallUrl": "https://raw.githubusercontent.com/mcltn/softlayer-scripts/master/burst/post-provision.bat",
+    "hosts": [
+        {
+            "hostname": "img-mx-26",
+            "gateway": "172.16.0.1",
+            "privateIPAddress": "172.16.0.26"
+        }
+    ]
+}
