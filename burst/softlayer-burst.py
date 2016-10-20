@@ -213,7 +213,13 @@ def provisionServersFromConfig():
         sshKey = host.get('sshKey', configJson.get('sshKey',''))
         postInstallUrl = host.get('postInstallUrl', configJson.get('postInstallUrl',''))
 
-        userData = '{"hostname": "' + str(hostname) + '", "privateIPAddress": "' + str(privateIPAddress) + '"}'
+        #userData = '{"hostname": "' + str(hostname) + '", "privateIPAddress": "' + str(privateIPAddress) + '"}'
+        userData = '{'
+
+        for key, value in host.iteritems():
+            print key
+            userData += '"' + key + '":"' + value + '",'
+        userData = userData[:-1] + '}'
 
         createdInstance = orderServer(hostname, domain, cpus, memory, disk, osCode, templateGuid, useLocalDisk, datacenter, private, dedicated, hourly, tag, privateVlan, nicSpeed, sshKey, userData, postInstallUrl)
         createdId = createdInstance['id']
