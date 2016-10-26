@@ -116,7 +116,8 @@ foreach($h in $config.hosts){
 
         $post_install_script = $current_path + "\" + $post_install_script_filename
 
-        Invoke-Command -FilePath $post_install_script -ComputerName $sl_private_ip_address -Authentication CredSSP -Credential $cred -ArgumentList $domain_name,$domain_user,$domain_user_password,$domain_user_key,$domain_ou_path,$dns_servers,$gateway
+        $this_session = New-PSSession -ComputerName $sl_private_ip_address -Authentication Negotiate -Credential $cred
+        Invoke-Command -Session $this_session -FilePath $post_install_script -ArgumentList $domain_name,$domain_user,$domain_user_password,$domain_user_key,$domain_ou_path,$dns_servers,$gateway
     }
     else
     {
