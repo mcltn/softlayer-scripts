@@ -1,4 +1,5 @@
-﻿
+﻿# ./post-executer.ps1 -api_username "username" -api_key "apikey" -config_filename "c:\config.json"
+
 ############################################################
 # Local Machine
 # > Set-ExecutionPolicy Unrestricted
@@ -11,28 +12,29 @@
 # > Set-Item wsman:\localhost\client\trustedhosts *
 # > Restart-Service WinRM
 
+param(
+    [string]$api_username,
+    [string]$api_key,
+    [string]$config_file
+)
+
 
 ######################################################################################
-# Set Run Variables
-# - These can be entered via the command prompt prior to running script
-#   if you do not want it in the file
 ######################################################################################
-
-$api_username = "username"
-$api_key = "apikey"
-$config_filename = "C:\config.json"
 
 $domain_name = "colton.local"
 $domain_user = "testaccount"
-
-#[Byte[]] $domain_user_key = (1..16)
-$domain_user_key = New-Object Byte[] 16   # You can use 16, 24, or 32 for AES
-[Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($domain_user_key)
-$domain_user_password = Read-Host -AsSecureString | ConvertFrom-SecureString -Key $domain_user_key
-
 $domain_ou_path = "OU=CloudServers,DC=dev"
 $dns_servers = "172.16.0.11" #"172.16.0.11,10.0.80.11,10.0.80.12"
 $gateway = "172.16.0.1"
+
+
+$domain_user_key = New-Object Byte[] 16   # You can use 16, 24, or 32 for AES
+[Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($domain_user_key)
+$domain_user_password = Read-Host "Domain User Password:" -AsSecureString | ConvertFrom-SecureString -Key $domain_user_key
+
+
+######################################################################################
 
 #$base_uri = "https://api.softlayer.com/rest/v3.1"        # PUBLIC
 $base_uri = "https://api.service.softlayer.com/rest/v3.1" # PRIVATE
