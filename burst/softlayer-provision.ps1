@@ -1,5 +1,7 @@
 ﻿# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "CREATE" -config_filename "c:\config.json"
 # ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "CANCEL" -config_filename "c:\config.json"
+# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "LISTIMAGES"
+# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "LISTVLANS"
 
 
 param(
@@ -20,18 +22,14 @@ $base_uri = "https://api.softlayer.com/rest/v3.1"           # PUBLIC
 $base_64_auth_info = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $api_username,$api_key)))
 
 
-############################
-# Get Config Server Data
-############################
-$config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
-
-if (!$config) {
-    "Error opening config."
-    exit
-}
-
-
 if ($action -eq "CREATE") {
+
+    $config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
+    if (!$config) {
+        "Error opening config."
+        exit
+    }
+
     ############################
     "Provisioning Servers"
     ############################
@@ -118,6 +116,13 @@ if ($action -eq "CREATE") {
     exit
 
 } elseif ($action -eq "CANCEL") {
+
+    $config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
+    if (!$config) {
+        "Error opening config."
+        exit
+    }
+
     ############################
     "Cancelling Servers By Tag : {0}" -f $config.tag
     ############################
@@ -135,6 +140,30 @@ if ($action -eq "CREATE") {
             $cancel_response = Invoke-RestMethod -Uri $cancel_server_uri -Method DELETE -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
         }
     }
+
+    exit
+
+} elseif ($action -eq "LISTIMAGES") {
+    ############################
+    "Listing Image Templates"
+    ############################
+
+    $base_64_auth_info = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $api_username,$api_key)))
+    $images_uri = $base_uri + "/SoftLayer_Account/getPrivateBlockDeviceTemplateGroups"
+    $images = Invoke-RestMethod -Uri $images_uri -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
+    $images
+
+    exit
+
+} elseif ($action -eq "LISTVLANS") {
+    ############################
+    "Listing VLANS"
+    ############################
+
+    $base_64_auth_info = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $api_username,$api_key)))
+    $vlans_uri = $base_uri + "/SoftLayer_Account/getPrivateNetworkVlans"
+    $vlans = Invoke-RestMethod -Uri $vlans_uri -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
+    $vlans
 
     exit
 
