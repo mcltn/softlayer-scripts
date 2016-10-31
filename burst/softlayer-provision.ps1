@@ -1,5 +1,5 @@
-﻿# softlayer-provision.ps1 "username","apikey","CREATE","c:\config.json"
-# softlayer-provision.ps1 "username","apikey","CANCEL","c:\config.json"
+﻿# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "CREATE" -config_filename "c:\config.json"
+# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "CANCEL" -config_filename "c:\config.json"
 
 
 param(
@@ -88,6 +88,8 @@ if ($action -eq "CREATE") {
         if ($_private_vlan -ne "") {
             $order_data.parameters[0].Add("primaryBackendNetworkComponent",@{networkVlan=@{id=$_private_vlan}})
         }
+
+
 
         $json = $order_data | ConvertTo-Json -Depth 5
         $json
