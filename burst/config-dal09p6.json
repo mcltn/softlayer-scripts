@@ -19,6 +19,14 @@
         {
             "hostname": "mcltn-dal09-1",
             "privateIPAddress": "172.1.1.11"
+        },
+        {
+            "hostname": "mcltn-dal09-2",
+            "privateIPAddress": "172.1.1.12"
+        },
+        {
+            "hostname": "mcltn-dal09-3",
+            "privateIPAddress": "172.1.1.13"
         }
     ]
 }

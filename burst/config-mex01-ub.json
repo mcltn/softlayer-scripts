@@ -1,0 +1,28 @@
+﻿{
+    "domain": "colton.cc",
+    "datacenter": "mex01",
+    "cpus": 1,
+    "memory": 1024,
+    "disk": 25,
+    "localDisk": true,
+    "private": true,
+    "dedicated": false,
+    "hourly": true,
+    "tag": "burst3-mex01",
+    "privateVlan": 1251967,
+    "nicSpeed": 1000,
+    "postInstallUrl": "",
+    "sshKey": "",
+    "osCode": "UBUNTU_LATEST",
+    "templateGuid": "",
+    "hosts": [
+        {
+            "hostname": "img-mx-43",
+            "privateIPAddress": "172.16.0.43"
+        },
+        {
+            "hostname": "img-mx-44",
+            "privateIPAddress": "172.16.0.44"
+        }
+    ]
+}

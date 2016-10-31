@@ -1,13 +1,9 @@
 ﻿
 ############################################################
 # Local Machine
+# > Set-ExecutionPolicy Unrestricted
 # > Set-Item wsman:\localhost\client\trustedhosts *
 # > Restart-Service WinRM
-# > Enable-WSManCredSSP -Role Client -DelegateComputer *
-# > gpedit.msc
-#     Computer Configuration > Administrative Templates > System > Credentials Delegation
-#     Double Click "Allow delegating fresh credentials with NTLM-only Server Authentication"
-#     Enable and add to server list "WSMAN/*"
 #
 # Remote Machine
 # > Enable-WSManCredSSP -Role server
@@ -24,8 +20,7 @@
 
 $api_username = "username"
 $api_key = "apikey"
-$post_install_script_filename = "powershell-postinstall.ps1"
-$config_filename = "config-mex01.json"
+$config_filename = "C:\config.json"
 
 $domain_name = "colton.local"
 $domain_user = "testaccount"
@@ -39,7 +34,8 @@ $domain_ou_path = "OU=CloudServers,DC=dev"
 $dns_servers = "172.16.0.11" #"172.16.0.11,10.0.80.11,10.0.80.12"
 $gateway = "172.16.0.1"
 
-$base_uri = "https://api.softlayer.com/rest/v3.1"
+#$base_uri = "https://api.softlayer.com/rest/v3.1"        # PUBLIC
+$base_uri = "https://api.service.softlayer.com/rest/v3.1" # PRIVATE
 
 ######################################################################################
 
@@ -50,14 +46,10 @@ $base_uri = "https://api.softlayer.com/rest/v3.1"
 ############################
 ############################
 
-$current_path = Split-Path $MyInvocation.MyCommand.Path
-$current_path
-
 ############################
 # Get Config Server Data
 ############################
-$config_path = $current_path + "\" + $config_filename
-$config = Get-Content -Raw -Path $config_path | ConvertFrom-Json
+$config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
 
 
 ############################
@@ -76,7 +68,6 @@ $servers = Invoke-RestMethod -Uri $server_list_uri -Headers @{Authorization=("Ba
 ############################
 # Loop Through Servers
 ############################
-#foreach($s in $servers){
 foreach($h in $config.hosts){
 
     $server_id = $null
@@ -108,7 +99,7 @@ foreach($h in $config.hosts){
         $sl_private_ip_address
 
         $server_password = $instance.operatingSystem.passwords[0].password
-        $server_password
+        #$server_password
 
         $server_username = "Administrator"
         $secure_password = ConvertTo-SecureString -AsPlainText $server_password -Force
@@ -116,8 +107,80 @@ foreach($h in $config.hosts){
 
         $post_install_script = $current_path + "\" + $post_install_script_filename
 
-        $this_session = New-PSSession -ComputerName $sl_private_ip_address -Authentication Negotiate -Credential $cred
-        Invoke-Command -Session $this_session -FilePath $post_install_script -ArgumentList $domain_name,$domain_user,$domain_user_password,$domain_user_key,$domain_ou_path,$dns_servers,$gateway
+        $sl_session_option = New-PSSessionOption -MaxConnectionRetryCount 1
+        $sl_session = New-PSSession -ComputerName $sl_private_ip_address -Authentication Negotiate -Credential $cred -SessionOption $sl_session_option
+        Invoke-Command -Session $sl_session -ScriptBlock {
+            
+            param(
+                [string]$new_ip_address,
+                [string]$dns_servers,
+                [string]$gateway
+            )
+
+            $private_nic = Get-NetAdapter -Name "PrivateNetwork-A"
+            #$sl_ip = ($private_nic | Get-NetIPAddress -AddressFamily IPv4).IPAddress
+            $private_nic | New-NetIPAddress -AddressFamily IPv4 -IPAddress $new_ip_address -PrefixLength 24 -Type Unicast #-DefaultGateway $gateway
+            if (!$?)
+            {
+                " Error saving IP Address "
+            }
+
+            Disable-NetAdapterBinding -Name "PrivateNetwork-A" -ComponentID ms_tcpip6
+
+            ###############################
+            " Update DNS Servers "
+            ###############################
+            $private_nic | Set-DnsClientServerAddress -ServerAddresses ($dns_servers)
+
+            
+        
+        } -ArgumentList $($new_ip_address,$dns_servers,$gateway)
+
+        "Pausing 10 Seconds to Before Switching Sessions"
+        Sleep -Seconds 10
+
+        $hig_session = New-PSSession -ComputerName $new_ip_address -Authentication Negotiate -Credential $cred
+        Invoke-Command -Session $hig_session -ScriptBlock {
+
+            param(
+                [byte[]]$domain_user_key,
+                [string]$domain_user,
+                [string]$domain_user_password,
+                [string]$domain_name,
+                [string]$domain_ou_path,
+                [string]$sl_private_ip_address
+            )
+
+            ###############################
+            #" Remove SoftLayer IP Address "
+            ###############################
+            $private_nic = Get-NetAdapter -Name "PrivateNetwork-A"
+            $private_nic | Remove-NetIPAddress -IPAddress $sl_private_ip_address -Confirm:$False
+
+            Sleep -Seconds 5
+
+            ######################################################
+            # Credentials
+            ######################################################
+            $secure_password = $domain_user_password | ConvertTo-SecureString -Key $domain_user_key
+            $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domain_user, $secure_password
+
+            ############################
+            " Add to Domain "
+            ############################
+            try {
+                Add-Computer -DomainName $domain_name -Credential $cred #-OUPath $domain_ou_path 2>&1
+            } catch {
+                "Error adding to domain"
+            }
+
+            ############################
+            " Reboot Server "
+            ############################
+            Sleep -Seconds 5
+            Restart-Computer -Force
+        } -ArgumentList $($domain_user_key,$domain_user,$domain_user_password,$domain_name,$domain_ou_path,$sl_private_ip_address)
+
     }
     else
     {

@@ -5,21 +5,24 @@
     "memory": 2048,
     "disk": 100,
     "localDisk": true,
-    "private": false,
+    "private": true,
     "dedicated": false,
     "hourly": true,
-    "tag": "poc-burst-mex01",
+    "tag": "burst1-img-mex01",
     "privateVlan": 1251967,
-    "nicSpeed": 100,
+    "nicSpeed": 1000,
+    "postInstallUrl": "",
     "sshKey": "",
     "osCode": "",
-    "templateGuid": "b06db701-770a-4a26-89eb-1f4650095ef2",
-    "postInstallUrl": "https://raw.githubusercontent.com/mcltn/softlayer-scripts/master/burst/post-provision.bat",
+    "templateGuid": "d047c733-6ba4-4d5e-8591-5feae64a1a80",
     "hosts": [
         {
-            "hostname": "img-mx-26",
-            "gateway": "172.16.0.1",
-            "privateIPAddress": "172.16.0.26"
+            "hostname": "img-mx-31",
+            "privateIPAddress": "172.16.0.31"
+        },
+        {
+            "hostname": "img-mx-32",
+            "privateIPAddress": "172.16.0.32"
         }
     ]
 }
