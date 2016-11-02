@@ -2,6 +2,7 @@
 # ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "CANCEL" -config_filename "c:\config.json"
 # ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "LISTIMAGES"
 # ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "LISTVLANS"
+# ./softlayer-provision.ps1 -api_username "username" -api_key "apikey" -action "LISTSERVERS"
 
 
 param(
@@ -11,9 +12,31 @@ param(
     [string]$config_file
 )
 
+############################
+# Constants
+############################
 
 $base_uri = "https://api.softlayer.com/rest/v3.1"           # PUBLIC
 #$base_uri = "https://api.service.softlayer.com/rest/v3.1"  # PRIVATE
+
+$log_filename = (Get-Date).toString("yyyy-MM-dd") + ".log"
+$log_file = "c:\temp\log\" + $log_filename
+
+############################
+############################
+
+
+
+############################
+# Logging Function
+############################
+Function LogWrite
+{
+    Param ([string]$logstring)
+    $timestamp = (Get-Date).toString("yyyy/MM/dd HH:mm:ss")
+    $line = "$timestamp `t $logstring"
+    Add-Content $log_file -value $line
+}
 
 
 ############################
@@ -96,20 +119,30 @@ if ($action -eq "CREATE") {
         ##################################
         "Provisioning : {0}" -f $hostname
         ##################################
+        $_line = "Creating Server {0}" -f $hostname
+        LogWrite $_line
 
         $uri = $base_uri + "/SoftLayer_Virtual_Guest"
         $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
         $headers.Add("Authorization", "Basic {0}" -f $base_64_auth_info)
         $headers.Add("Accept", "application/json")
-        $order_response = Invoke-RestMethod $uri -Method Post -Headers $headers -ContentType 'application/json' -Body $json
-        $order_response
+        $order_response = try {
+                Invoke-RestMethod $uri -Method Post -Headers $headers -ContentType 'application/json' -Body $json
+            } catch {
+                $_line = "Failed to create Server : {0}" -f $hostname
+                LogWrite $_line
+                LogWrite $_
+            }
+        if ($order_response) {
+            $_server_id = $order_response.id
+            $_line = "Created Server : {0}" -f $_server_id
+            LogWrite $_line
+            Sleep -Seconds 1
 
-        $_server_id = $order_response.id
-        Sleep -Seconds 1
-
-        $tag_obj = @{parameters=@($_tag)} | ConvertTo-Json -Depth 3
-        $uri = $base_uri + "/SoftLayer_Virtual_Guest/{0}/setTags" -f $_server_id
-        $tag_response = Invoke-RestMethod $uri -Method Post -Headers $headers -ContentType 'application/json' -Body $tag_obj
+            $tag_obj = @{parameters=@($_tag)} | ConvertTo-Json -Depth 3
+            $uri = $base_uri + "/SoftLayer_Virtual_Guest/{0}/setTags" -f $_server_id
+            $tag_response = Invoke-RestMethod $uri -Method Post -Headers $headers -ContentType 'application/json' -Body $tag_obj
+        }
         
     }
 
@@ -136,6 +169,7 @@ if ($action -eq "CREATE") {
         $servers
         foreach($s in $servers){
             "Canceling Server : {0}" -f $s.id
+            LogWrite "Canceling Server : " + $s.id
             $cancel_server_uri = $base_uri + "/SoftLayer_Virtual_Guest/{0}" -f $s.id
             $cancel_response = Invoke-RestMethod -Uri $cancel_server_uri -Method DELETE -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
         }
@@ -164,6 +198,18 @@ if ($action -eq "CREATE") {
     $vlans_uri = $base_uri + "/SoftLayer_Account/getPrivateNetworkVlans"
     $vlans = Invoke-RestMethod -Uri $vlans_uri -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
     $vlans
+
+    exit
+
+} elseif ($action -eq "LISTSERVERS") {
+    ############################
+    "Listing Servers"
+    ############################
+
+    $base_64_auth_info = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $api_username,$api_key)))
+    $vs_uri = $base_uri + "/SoftLayer_Account/getVirtualGuests"
+    $vs = Invoke-RestMethod -Uri $vs_uri -Headers @{Authorization=("Basic {0}" -f $base_64_auth_info)}
+    $vs
 
     exit
 
