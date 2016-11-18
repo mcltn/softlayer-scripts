@@ -1,29 +1,29 @@
-#Powershell -executionPolicy ByPass c:\postinstall.ps1
+
+##################################
+##################################
+
+param(
+    [string]$domain_name,
+    [string]$domain_user,
+    [string]$domain_password,
+    [byte[]]$domain_key,
+    [string]$domain_ou_path,
+    [string]$dns_servers,
+    [string]$gateway
+)
+
+
+##################################
+##################################
 
 
 ###################
 " Get Server Name "
 ###################
 $pwd = (Get-Location)
-$serverName = $env:computername
-$serverName
+$server_name = $env:computername
+$server_name
 ""
-
-$domainName = "domain.local"
-$dnsServers = ("10.0.80.11,10.0.80.12,172.16.0.11")
-$gateway = "172.16.0.1"
-$OUPath = "OU=CloudServers,DC=dev"
-
-$pauseTime = 5  #Seconds
-$sleepTime = 60 #Seconds
-
-
-####################
-# Functions
-####################
-
-##################################
-##################################
 
 
 ###################
@@ -57,6 +57,7 @@ if ($dl -eq "") {
     ##################################################
     " Getting Userdata from SoftLayer API Service... "
     ##################################################
+    $uri = "https://api.service.softlayer.com/rest/v3/SoftLayer_Resource_Metadata/getUserMetadata.json"
     $userdata = Invoke-RestMethod -Uri $uri | ConvertFrom-Json
     $userdata
     $hn = $userdata.hostname
@@ -70,9 +71,9 @@ Write-Host " IP Address : $ip"
 ###############################
 " Updating Private NIC Address "
 ###############################
-$privateNic = Get-NetAdapter -Name "PrivateNetwork-A"
-$slIP = ($privateNic | Get-NetIPAddress -AddressFamily IPv4).IPAddress
-$privateNic | New-NetIPAddress -AddressFamily IPv4 -IPAddress $ip -PrefixLength 24 -Type Unicast #-DefaultGateway $gateway
+$private_nic = Get-NetAdapter -Name "PrivateNetwork-A"
+$sl_ip = ($private_nic | Get-NetIPAddress -AddressFamily IPv4).IPAddress
+$private_nic | New-NetIPAddress -AddressFamily IPv4 -IPAddress $ip -PrefixLength 24 -Type Unicast #-DefaultGateway $gateway
 if (!$?)
 {
     " Error saving IP Address "
@@ -81,21 +82,39 @@ if (!$?)
 ###############################
 " Update DNS Servers "
 ###############################
-$privateNic | Set-DnsClientServerAddress -ServerAddresses $dnsServers
+$private_nic | Set-DnsClientServerAddress -ServerAddresses ($dns_servers)
 
 
 ###############################
 " Remove SoftLayer IP Address "
 ###############################
-#$privateNic | Remove-NetIPAddress -IPAddress $slIP -Confirm:$False
+#$private_nic | Remove-NetIPAddress -IPAddress $sl_ip -Confirm:$False
 #Remove-NetRoute -NextHop x.x.x.x -Confirm:$False
 
 
-Sleep -Seconds $pauseTime
+Sleep -Seconds 10
+
+#Test-Connection 172.16.0.11
+
+######################################################
+# Credentials
+######################################################
+$secure_password = $domain_password | ConvertTo-SecureString -Key $domain_key
+$cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domain_user, $secure_password
 
 ############################
-" Reboot Server ?? "
+" Add to Domain "
 ############################
-#Restart-Computer -Force
+try {
+    Add-Computer -DomainName $domain_name -Credential $cred #-OUPath $domain_ou_path 2>&1
+} catch {
+    "Error adding to domain"
+}
+
+############################
+" Reboot Server "
+############################
+Sleep -Seconds 5
+Restart-Computer -Force
 
 exit
