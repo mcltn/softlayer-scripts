@@ -10,18 +10,17 @@ qty = 1
 hostname = "aa-mcltn"
 domain = "colton.cc"
 
-datacenter = 'wdc01'
-privateVlan = 442426 #856
-#privateVlan = 1222477 #786
-
- #900 #873 #900 904
+datacenter = 'wdc04'
+privateVlan = 1354937 #911
 
 
-
+cores = 8
 cpu_name = '8 x 2.0 GHz Cores'
 ram_name = '16 GB'
 disk_name = '100 GB (SAN)'
-os_name = 'Windows Server 2012 R2 Standard Edition (64 bit)' #'Windows Server 2012 Standard Edition (64 bit)'
+os_name = 'Ubuntu Linux 14.04 LTS Trusty Tahr - Minimal Install (64 bit)'
+#'Windows Server 2012 R2 Standard Edition (64 bit)'
+#'Windows Server 2012 Standard Edition (64 bit)'
 bandwidth_name = '0 GB Bandwidth'
 nic_name = '100 Mbps Private Network Uplink'
 #virusscan_name = 'McAfee VirusScan Enterprise'
@@ -103,9 +102,22 @@ for config in configs:
 
 							#OS
 							elif item_price['item']['description'] == os_name :
+								print '\nOS Name: %s' % item_price['item']['description']
+								item_price_valid = True
 
-								data['parameters'][0]['prices'].append({'id':item_price['id']})
-								complete_categories.append(config['itemCategory']['name'])
+								# Need to filter license by cpu if required
+								item_attributes = item_price['attributes']
+								for item_attribute in item_attributes:
+									if int(item_attribute['itemPriceAttributeTypeId']) == 21:
+										if int(item_attribute['value']) > cores:
+											item_price_valid = False
+									if int(item_attribute['itemPriceAttributeTypeId']) == 22:
+										if int(item_attribute['value']) < cores:
+											item_price_valid = False
+
+								if item_price_valid:
+									data['parameters'][0]['prices'].append({'id':item_price['id']})
+									complete_categories.append(config['itemCategory']['name'])
 
 							#BANDWIDTH
 							elif item_price['item']['description'] == bandwidth_name :
