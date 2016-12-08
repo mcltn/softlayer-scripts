@@ -9,7 +9,7 @@ param(
     [string]$api_username,
     [string]$api_key,
     [string]$action,
-    [string]$config_file
+    [string]$config_filename
 )
 
 ############################
@@ -88,6 +88,7 @@ if ($action -eq "CREATE") {
                     maxMemory=$_memory
                     localDiskFlag=$_local_disk
                     privateNetworkOnlyFlag=$_private
+                    dedicatedAccountHostOnlyFlag=$_dedicated
                     hourlyBillingFlag=$_hourly
                     datacenter=@{
                         name=$_datacenter
