@@ -1,4 +1,4 @@
-﻿# ./post-executer.ps1 -api_username "username" -api_key "apikey" -config_filename "c:\config.json"
+﻿# ./post-executer.ps1 -api_username "username" -api_key "apikey" -config_file "c:\config.json"
 
 ############################################################
 # Local Machine
@@ -51,7 +51,7 @@ $base_uri = "https://api.service.softlayer.com/rest/v3.1" # PRIVATE
 ############################
 # Get Config Server Data
 ############################
-$config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
+$config = Get-Content -Raw -Path $config_file | ConvertFrom-Json
 
 
 ############################
