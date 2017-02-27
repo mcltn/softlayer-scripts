@@ -1,4 +1,4 @@
-﻿# ./post-executer.ps1 -api_username "username" -api_key "apikey" -config_filename "c:\config.json"
+﻿# ./post-executer.ps1 -api_username "username" -api_key "apikey" -config_file "c:\config.json"
 
 ############################################################
 # Local Machine
@@ -27,7 +27,7 @@ $domain_user = "testaccount"
 $domain_ou_path = "OU=CloudServers,DC=dev"
 $dns_servers = "172.16.0.11" #"172.16.0.11,10.0.80.11,10.0.80.12"
 $gateway = "172.16.0.1"
-
+$remove_gateway = "172.20.130.1" # $null
 
 $domain_user_key = New-Object Byte[] 16   # You can use 16, 24, or 32 for AES
 [Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($domain_user_key)
@@ -51,7 +51,7 @@ $base_uri = "https://api.service.softlayer.com/rest/v3.1" # PRIVATE
 ############################
 # Get Config Server Data
 ############################
-$config = Get-Content -Raw -Path $config_filename | ConvertFrom-Json
+$config = Get-Content -Raw -Path $config_file | ConvertFrom-Json
 
 
 ############################
@@ -125,6 +125,10 @@ foreach($h in $config.hosts){
             if (!$?)
             {
                 " Error saving IP Address "
+            }
+
+            if ($remove_gateway) {
+                $private_nic | Remove-NetRoute NextHop $remove_gateway
             }
 
             Disable-NetAdapterBinding -Name "PrivateNetwork-A" -ComponentID ms_tcpip6
