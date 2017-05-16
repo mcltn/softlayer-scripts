@@ -12,8 +12,8 @@ import subprocess
 ############################################################
 ############################################################
 ### USAGE:
-### python kickstart.py --serverId 442802 --iso /path/to.iso
-### python kickstart.py --serverId 442802 --unmount
+### python bm_mount_iso.py --serverId 442802 --iso /path/to.iso
+### python bm_mount_iso.py --serverId 442802 --unmount
 ###
 ###
 ### This script uses the CLI tools provided by each
