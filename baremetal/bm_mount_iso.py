@@ -12,7 +12,7 @@ import subprocess
 ############################################################
 ############################################################
 ### USAGE:
-### python kickstart.py --serverId 442802
+### python kickstart.py --serverId 442802 --iso /path/to.iso
 ### python kickstart.py --serverId 442802 --unmount
 ###
 ###
