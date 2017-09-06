@@ -134,7 +134,7 @@ enddate = '6/30/2017'
 getInvoicesByDate(startdate,enddate)
 
 # If you know an invoice ID just run this by itself.
-#invoice_id = 15291251
+#invoice_id = 0
 #getInvoiceById(invoice_id)
 
 ####################################################
