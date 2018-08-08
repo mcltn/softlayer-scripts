@@ -103,6 +103,7 @@ nonZeroAssociatedChildren = client['Billing_Invoice_Item'].getNonZeroAssociatedC
 
 The following sample script creates a .csv file of all the billing level detail for each owned sub account for the dates specified.
 
+```
 import SoftLayer, argparse, csv,logging,time
 from datetime import datetime
 import dateutil.parser
@@ -262,3 +263,4 @@ for invoice in invoiceList:
             #print(row)
 ##close CSV File
 outfile.close()
+```

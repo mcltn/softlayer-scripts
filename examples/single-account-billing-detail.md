@@ -77,6 +77,7 @@ nonZeroAssociatedChildren = client['Billing_Invoice_Item'].getNonZeroAssociatedC
 
 The following sample script creates a .csv file of all the billing level detail for an account.
 
+```
 import SoftLayer, configparser, argparse, csv,logging,time
 
 def getDescription(categoryCode, detail):
@@ -232,4 +233,4 @@ for invoice in InvoiceList:
             print(row)
 ##close CSV File
 outfile.close()
-
+```
