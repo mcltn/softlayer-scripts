@@ -9,7 +9,7 @@ class example():
         self.client = SoftLayer.Client()
 
         outputname = 'product_packages-oct2017.csv'
-        fieldnames = ['Package ID', 'Package Name', 'Item ID', 'Description', 'KeyName', 'Price ID', 'Hourly Fee', 'One Time Fee', 'Recurring Fee', 'Setup Fee', 'Usage Fee', 'Location Group', 'Locations']
+        fieldnames = ['Package ID', 'Package Name', 'Item ID', 'Description', 'KeyName', 'Price ID', 'PriceType', 'Hourly Fee', 'One Time Fee', 'Recurring Fee', 'Setup Fee', 'Usage Fee', 'Location Group', 'Locations']
         self.outfile = open(outputname, 'w')
         #self.csvwriter = csv.writer(self.outfile, delimiter='\t', quotechar='"', quoting=csv.QUOTE_ALL)
         self.csvwriter = csv.DictWriter(self.outfile, delimiter=',', fieldnames=fieldnames, quoting=csv.QUOTE_MINIMAL)
@@ -23,7 +23,7 @@ class example():
         mask = "mask[hourlyBillingAvailableFlag]"
         result = self.client['Product_Package'].getAllObjects();
         for product in result:
-            print str(product['id']) + " - " + product['name']
+            print (str(product['id']) + " - " + product['name'])
             main.getPackage(product['id'], product['name'])
         self.outfile.close()
     
@@ -31,7 +31,7 @@ class example():
         """
         Gets a specific package and prints out some useful information
         """
-        mask = "mask[items[prices[id,hourlyRecurringFee,oneTimeFee,recurringFee,setupFee,usageRate,locationGroupId,attributes,categories,item,orderOptions,pricingLocationGroup[locations]]]]"
+        mask = "mask[items[prices[id,priceType,hourlyRecurringFee,oneTimeFee,recurringFee,setupFee,usageRate,locationGroupId,attributes,categories,item,orderOptions,pricingLocationGroup[locations]]]]"
 
         # Not all packages are available in all locations, you can check that with getLocations()
         # locations = self.client['Product_Package'].getLocations(id=package_id)
@@ -41,7 +41,7 @@ class example():
 
         for item in result['items']:
 
-            print '\n\n'
+            print ('\n\n')
             print(item)
 
             #print str(item['id']) + " - " + item['description'] + " --- " + item['keyName']
@@ -88,6 +88,7 @@ class example():
                     'Description': item['description'],
                     'KeyName': item['keyName'],
                     'Price ID': prices['id'],
+                    'PriceType': prices['priceType'],
                     'Hourly Fee': hourlyRecurringFee,
                     'One Time Fee': oneTimeFee,
                     'Recurring Fee': recurringFee,
